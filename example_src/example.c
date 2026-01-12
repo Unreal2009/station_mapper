@@ -39,7 +39,16 @@ int main(int argc, char *argv[])
     // Draw user's location
     draw_point_by_lat_lon(&map, user_lat, user_lon, 0, 0, 255);
 
+    // Print all stations for test
+    // printf("Total stations '%d'\n", stations.num_stations);
+    // for (int i = 0; i < stations.num_stations; i++) {
+    //     printf("station ID '%d' name '%s'  latitude %f longitude %f\n",
+    //         stations.stations[i].id, stations.stations[i].name, stations.stations[i].lat, stations.stations[i].lon);
+    // }
+    // return 0;
+
     // Draw all stations
+
     for (int i = 0; i < stations.num_stations; i++) {
         draw_point_by_lat_lon(&map, stations.stations[i].lat, stations.stations[i].lon, 255, 0, 0);
     }

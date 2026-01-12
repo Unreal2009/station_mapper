@@ -91,7 +91,7 @@ stations_list_t load_stations(const char * stations_list_filename) {
     stations_list.num_stations = 0;
 
     // Count entries
-    FILE *fp; 
+    FILE *fp;
     fp = fopen(stations_list_filename, "r");
     fscanf(fp, "%*[^\n]\n");
     while(!feof(fp))
@@ -100,7 +100,7 @@ stations_list_t load_stations(const char * stations_list_filename) {
         stations_list.num_stations++;
     }
     fclose(fp);
-    stations_list.num_stations = stations_list.num_stations;
+    //stations_list.num_stations = stations_list.num_stations;
 
     // Read stations
     stations_list.stations = malloc(stations_list.num_stations * sizeof(station_t));
@@ -109,8 +109,9 @@ stations_list_t load_stations(const char * stations_list_filename) {
     for (int i = 0; i < stations_list.num_stations; i++)
     {
         char line[256];
+        memset(line, 0, sizeof(line));
         fgets(line, 256, fp);
-        sscanf(line, "%d,%s,%f,%f", &stations_list.stations[i].id,
+        sscanf(line, "%d,%[^,],%f,%f", &stations_list.stations[i].id,
                                     stations_list.stations[i].name,
                                     &stations_list.stations[i].lat,
                                     &stations_list.stations[i].lon);
