@@ -61,3 +61,11 @@ Station Id,Station name,latitude,longitude
 
 Для работы с BMP используется библиотека LoadBMP: https://github.com/vallentin/LoadBMP
 
+## Результат работы
+
+Исходная карта<p>
+![](/data/map_1.bmp)
+
+Карта после обработки<p>
+![](/map_out.bmp)
+
