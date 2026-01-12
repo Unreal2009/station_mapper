@@ -8,6 +8,14 @@
 
 /* ==================  Data types  ================================== */
 
+#define LOAD_OK                 0
+#define LOAD_MAP_ERR            1 // Failed to load map image file
+#define LOAD_CONFIG_ERR         2 // Failed to load config file
+#define LOAD_BMP_ERR            3 // LoadBMP Load Error
+
+#define LOAD_STATION_ERR        4 // LoadBMP Load Error
+#define LOAD_INTERNAL_ERR       5 // LoadBMP Load Error
+
 // Map binary image with related metadata 
 typedef struct {
     unsigned char *image;
@@ -17,6 +25,7 @@ typedef struct {
     float top_left_lon;
     float bottom_right_lat;
     float bottom_right_lon;
+    int   err_code;   /*Error*/
 } peace_of_map_t;
 
 
@@ -33,6 +42,7 @@ typedef struct {
 typedef struct {
     station_t *stations;
     int num_stations;
+    int   err_code;   /*Error*/
 } stations_list_t;
 
 
@@ -49,7 +59,6 @@ typedef struct {
 
 // Return current library version.
 const version_t get_library_version(void);
-
 
 // Load map image (BMP) linked to the geographical coordinates.
 // Linkage information is loaded from config file.

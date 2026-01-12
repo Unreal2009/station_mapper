@@ -22,24 +22,35 @@ peace_of_map_t load_map(const char* image_filename, const char* config_filename)
 
     if(access(image_filename, F_OK) != 0) {
         printf("Failed to load map image file %s\n", image_filename);
+        map.err_code = LOAD_MAP_ERR;
         return map;
     }
 
     if(access(config_filename, F_OK) != 0) {
         printf("Failed to load config file %s\n", config_filename);
+        map.err_code = LOAD_CONFIG_ERR;
         return map;
     }
 
     unsigned int err = loadbmp_decode_file(image_filename, &map.image, &map.width, &map.height, LOADBMP_RGBA);
-    if (err)
+    if (err){
 		printf("LoadBMP Load Error: %u\n", err);
+        map.err_code = LOAD_BMP_ERR;
+        return map;
+    }
     
     FILE *fp;
-    fp = fopen(config_filename, "r");
+    if((fp = fopen(config_filename, "r")) == 0){
+        printf("Failed to load config file %s\n", config_filename);
+        map.err_code = LOAD_CONFIG_ERR;
+        return map;
+    };
+
     fscanf(fp, "%*[^\n]\n");
     fscanf(fp, "%f, %f, %f, %f\n", &map.top_left_lat, &map.top_left_lon, &map.bottom_right_lat, &map.bottom_right_lon);
     fclose(fp);
 
+    map.err_code = LOAD_OK;
     return map;
 }
 
@@ -92,7 +103,13 @@ stations_list_t load_stations(const char * stations_list_filename) {
 
     // Count entries
     FILE *fp;
-    fp = fopen(stations_list_filename, "r");
+    if((fp = fopen(stations_list_filename, "r")) == 0)
+    {
+        // Error open file
+        stations_list.err_code = LOAD_STATION_ERR;
+        return stations_list;
+    };
+
     fscanf(fp, "%*[^\n]\n");
     while(!feof(fp))
     {
@@ -100,11 +117,23 @@ stations_list_t load_stations(const char * stations_list_filename) {
         stations_list.num_stations++;
     }
     fclose(fp);
-    //stations_list.num_stations = stations_list.num_stations;
 
     // Read stations
     stations_list.stations = malloc(stations_list.num_stations * sizeof(station_t));
-    fp = fopen(stations_list_filename, "r");
+    if(stations_list.stations == NULL)
+    {
+        // Internal error
+        stations_list.err_code = LOAD_INTERNAL_ERR;
+        return stations_list;
+    }
+
+    if((fp = fopen(stations_list_filename, "r")) == NULL)
+    {
+        // Error open file
+        stations_list.err_code = LOAD_STATION_ERR;
+        return stations_list;
+    }
+
     fscanf(fp, "%*[^\n]\n");    
     for (int i = 0; i < stations_list.num_stations; i++)
     {
@@ -117,7 +146,6 @@ stations_list_t load_stations(const char * stations_list_filename) {
                                     &stations_list.stations[i].lon);
     }
     fclose(fp);
-
     return stations_list;
 }
 
@@ -128,7 +156,7 @@ float get_distance_in_km(float lat_1, float lon_1, float lat_2, float lon_2) {
 
 
 float deg_to_rad(float deg) {
-  return deg * (3.1415 / 180);
+  return deg * (M_PI / 180);
 }
 
 

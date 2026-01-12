@@ -22,9 +22,26 @@ int main(int argc, char *argv[])
     version_t version = get_library_version();
     printf("Using stationmapper %d.%d.%d\n", version.major, version.minor, version.patch);
 
+    // Check input args
+    if(argc < 4)
+    {
+        printf("\n****** Error input arguments ******\n");
+        printf("Use application './example map.bmp map.csv stations.csv'\n");
+        return 0;
+    }
+
 
     // Load map and stations list
     peace_of_map_t map = load_map(argv[1], argv[2]);
+
+    if(map.err_code != LOAD_OK)
+    {
+        printf("Error load_map() code %d\n", map.err_code);
+
+        // Cleanup
+        if(map.image) free(map.image);
+        return 0;
+    }
 
     stations_list_t stations = load_stations(argv[3]);
 
@@ -39,13 +56,18 @@ int main(int argc, char *argv[])
     // Draw user's location
     draw_point_by_lat_lon(&map, user_lat, user_lon, 0, 0, 255);
 
+#if 0
     // Print all stations for test
-    // printf("Total stations '%d'\n", stations.num_stations);
-    // for (int i = 0; i < stations.num_stations; i++) {
-    //     printf("station ID '%d' name '%s'  latitude %f longitude %f\n",
-    //         stations.stations[i].id, stations.stations[i].name, stations.stations[i].lat, stations.stations[i].lon);
-    // }
-    // return 0;
+    printf("Total stations '%d'\n", stations.num_stations);
+    for (int i = 0; i < stations.num_stations; i++) {
+        printf("station ID '%d' name '%s'  latitude %f longitude %f\n",
+            stations.stations[i].id, stations.stations[i].name, stations.stations[i].lat, stations.stations[i].lon);
+    }
+    // Cleanup
+    if(map.image) free(map.image);
+
+    return 0;
+#endif
 
     // Draw all stations
 
@@ -68,5 +90,5 @@ int main(int argc, char *argv[])
         printf("Output map image %s generated\n", output_map_name);
 
     // Cleanup
-    free(map.image);
+    if(map.image) free(map.image);
 }
