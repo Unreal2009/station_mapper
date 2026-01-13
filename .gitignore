@@ -5,4 +5,5 @@ Git Bash.lnk
 *.raw
 *.o
 *.so
+*.exe
 example

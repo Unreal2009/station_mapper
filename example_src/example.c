@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[])
 {
+    int ret_code = 0;
     printf("--------------------------------------------------------------------------\n");
     printf("This is example for stationmapper library.\n");
     printf("The application loads map and a list of stations related to this map,\n");
@@ -27,23 +28,25 @@ int main(int argc, char *argv[])
     {
         printf("\n****** Error input arguments ******\n");
         printf("Use application './example map.bmp map.csv stations.csv'\n");
-        return 0;
+        ret_code = 1;
+        goto CLEANUP_ON_EXIT;
     }
 
 
     // Load map and stations list
     peace_of_map_t map = load_map(argv[1], argv[2]);
 
-    if(map.err_code != LOAD_OK)
-    {
+    if(map.err_code != LOAD_OK){
         printf("Error load_map() code %d\n", map.err_code);
-
-        // Cleanup
-        if(map.image) free(map.image);
-        return 0;
+        ret_code = 2;
+        goto CLEANUP_ON_EXIT;
     }
 
     stations_list_t stations = load_stations(argv[3]);
+    if(stations.err_code != LOAD_OK){
+        ret_code = 3;
+        goto CLEANUP_ON_EXIT;
+    }
 
     // Get user's location
     float user_lat = 55.655;
@@ -84,11 +87,16 @@ int main(int argc, char *argv[])
     // Generate output map image
     const char output_map_name[] = "map_out.bmp";
     int err = save_map(&map, output_map_name);
-	if (err)
+	if (err){
 		printf("Failed to save %s, error code: %u\n", output_map_name, err);
-    else
+        ret_code = 4;
+    }else{
         printf("Output map image %s generated\n", output_map_name);
+    }
 
+CLEANUP_ON_EXIT :
     // Cleanup
     if(map.image) free(map.image);
+    if(stations.stations) free(stations.stations);
+    return ret_code;
 }
