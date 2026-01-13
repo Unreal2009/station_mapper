@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         printf("\n****** Error input arguments ******\n");
         printf("Use application './example map.bmp map.csv stations.csv'\n");
         ret_code = 1;
-        goto CLEANUP_ON_EXIT;
+        return ret_code;
     }
 
 
@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     stations_list_t stations = load_stations(argv[3]);
     if(stations.err_code != LOAD_OK){
+        printf("Error load_stations() code %d\n", stations.err_code);
         ret_code = 3;
         goto CLEANUP_ON_EXIT;
     }
@@ -51,10 +52,10 @@ int main(int argc, char *argv[])
     // Get user's location
     float user_lat = 55.655;
     float user_lon = 37.252;
-    // printf("Enter your latitude (example: 55.655)\n");
-    // scanf("%f", &user_lat);
-    // printf("Enter your longitude (example: 37.252)\n");
-    // scanf("%f", &user_lon);
+    printf("Enter your latitude (example: 55.655)\n");
+    scanf("%f", &user_lat);
+    printf("Enter your longitude (example: 37.252)\n");
+    scanf("%f", &user_lon);
 
     // Draw user's location
     draw_point_by_lat_lon(&map, user_lat, user_lon, 0, 0, 255);

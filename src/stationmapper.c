@@ -100,6 +100,7 @@ void draw_point_by_lat_lon(peace_of_map_t * map, float lat, float lon, int r, in
 stations_list_t load_stations(const char * stations_list_filename) {
     stations_list_t stations_list;
     stations_list.num_stations = 0;
+    stations_list.err_code = LOAD_OK;
 
     // Count entries
     FILE *fp;
